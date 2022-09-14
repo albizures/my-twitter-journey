@@ -1,7 +1,17 @@
+const WindiCSSWebpackPlugin = require('windicss-webpack-plugin');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-}
+	webpack(config) {
+		config.plugins.push(new WindiCSSWebpackPlugin());
 
-module.exports = nextConfig
+		return config;
+	},
+	reactStrictMode: true,
+	swcMinify: true,
+	images: {
+		domains: ['pbs.twimg.com'],
+	},
+};
+
+module.exports = nextConfig;
