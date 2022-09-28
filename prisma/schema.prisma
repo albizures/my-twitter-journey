@@ -54,6 +54,50 @@ model User {
   sessions      Session[]
 }
 
+model TwitterUser {
+  id              String                @id
+  lastTimeChecked DateTime
+  tweets          Tweet[]
+  snapshots       TwitterUserSnapshot[]
+}
+
+model Tweet {
+  id                String      @id
+  userId            String
+  user              TwitterUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hashtags          String[]
+  mentions          String[]
+  media             String[]
+  polls             String[]
+  replayTo          String?
+  quote             String?
+  source            String
+  lang              String
+  createdAt         DateTime
+  sensitive         Boolean
+  conversationId    String?
+  conversationTweet Tweet?      @relation("conversation", fields: [conversationId], references: [id])
+  conversation      Tweet[]     @relation("conversation")
+}
+
+model TwitterUserSnapshot {
+  id             String       @id @default(cuid())
+  username       String       @unique
+  name           String
+  followerCount  Int
+  followingCount Int
+  tweetCount     Int
+  geo            String
+  bio            String?
+  location       String?
+  website        String?
+  banner         String?
+  createdAt      DateTime
+  userId         String?
+  verified       Boolean
+  user           TwitterUser? @relation(fields: [userId], references: [id])
+}
+
 model VerificationToken {
   identifier String
   token      String   @unique
