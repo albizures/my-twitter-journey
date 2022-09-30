@@ -1,8 +1,11 @@
-import { PrismaClient, Tweet } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { Result, to } from 'maybe-await-to';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { saveTweet } from '../../entities/tweet';
-import { getLastCheckedUser } from '../../entities/twitterUser';
+import {
+	getLastCheckedUser,
+	makeSnapshot,
+} from '../../entities/twitterUser';
 import { getRecentTweetByUser, TweetList } from '../../utils/twitter';
 
 const prisma = new PrismaClient();
@@ -110,6 +113,12 @@ export default async function handler(
 
 	if (!result.ok) {
 		errors.push(result.error);
+	}
+
+	const snapshotResult = await to(makeSnapshot(lastCheckedUser.id));
+
+	if (!snapshotResult.ok) {
+		errors.push(snapshotResult.error);
 	}
 
 	res.status(200).json({

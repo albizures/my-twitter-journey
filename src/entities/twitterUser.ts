@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client';
+import { to } from 'maybe-await-to';
+import { userLookup } from '../utils/twitter';
 
 const prisma = new PrismaClient();
 
@@ -39,4 +41,30 @@ export async function getLastCheckedUser() {
 	}
 
 	return user;
+}
+
+export async function makeSnapshot(userId: string) {
+	const snapshot = await to(userLookup(userId));
+
+	if (snapshot.ok) {
+		const { data } = snapshot;
+		await prisma.twitterUserSnapshot.create({
+			data: {
+				userId,
+				username: data.username,
+				name: data.name,
+				followerCount: data.followerCount,
+				followingCount: data.followingCount,
+				tweetCount: data.tweetCount,
+				pinnedTweetId: data.pinnedTweetId,
+				bio: data.bio,
+				location: data.location,
+				website: data.website,
+				createdAt: new Date(),
+				verified: data.verified,
+			},
+		});
+	} else {
+		throw snapshot.error;
+	}
 }

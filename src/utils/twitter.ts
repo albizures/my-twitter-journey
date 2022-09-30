@@ -49,25 +49,22 @@ export const userSchema = z
 		};
 	});
 
-export async function userLookup(username: string) {
-	const user = await twitterClient.users.findUserByUsername(
-		username,
-		{
-			'user.fields': [
-				'created_at',
-				'description',
-				'id',
-				'name',
-				'pinned_tweet_id',
-				'profile_image_url',
-				'public_metrics',
-				'username',
-				'verified',
-				'location',
-				'url',
-			],
-		},
-	);
+export async function userLookup(id: string) {
+	const user = await twitterClient.users.findUserById(id, {
+		'user.fields': [
+			'created_at',
+			'description',
+			'id',
+			'name',
+			'pinned_tweet_id',
+			'profile_image_url',
+			'public_metrics',
+			'username',
+			'verified',
+			'location',
+			'url',
+		],
+	});
 
 	const result = userSchema.safeParse(user);
 
