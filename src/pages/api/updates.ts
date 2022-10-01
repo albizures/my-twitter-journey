@@ -22,7 +22,7 @@ export default async function handler(
 	const lastCheckedUser = await getLastCheckedUser();
 
 	if (!lastCheckedUser) {
-		return res.status(0).json({
+		return res.status(200).json({
 			errors: [],
 			ids: [],
 		});
@@ -37,13 +37,13 @@ export default async function handler(
 	let nextToken: string | undefined = undefined;
 
 	while (true) {
-		console.log('checking updates', {
-			username: lastCheckedUser.snapshots[0]?.username,
-			lastSavedTweetId,
-			errors: errors.length,
-			retries,
-			ids,
-		});
+		// console.log('checking updates', {
+		// 	username: lastCheckedUser.snapshots[0]?.username,
+		// 	lastSavedTweetId,
+		// 	errors: errors.length,
+		// 	retries,
+		// 	ids,
+		// });
 
 		const tweetsResult: Result<TweetList> = await to(
 			getRecentTweetByUser({
@@ -70,7 +70,7 @@ export default async function handler(
 
 		const { data: tweets, meta } = tweetsResult.data as TweetList;
 
-		console.info(`${tweets.length} tweets got since`);
+		// console.info(`${tweets.length} tweets got since`);
 
 		for (let index = 0; index < tweets.length; index++) {
 			const tweet = tweets[index];
@@ -84,7 +84,7 @@ export default async function handler(
 				);
 				errors.push(result.error);
 			} else {
-				console.info(`tweet "${tweet.id}" saved`);
+				// console.info(`tweet "${tweet.id}" saved`);
 
 				ids.push(result.data.id);
 			}

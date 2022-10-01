@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, TwitterUserSnapshot } from '@prisma/client';
+import { Optional } from 'utility-types';
 import { to } from 'maybe-await-to';
 import { userLookup } from '../utils/twitter';
 
@@ -43,11 +44,53 @@ export async function getLastCheckedUser() {
 	return user;
 }
 
+async function isSnapshotUnique(
+	userId: string,
+	snapshot: Optional<TwitterUserSnapshot, 'id'>,
+) {
+	const lastSnapshot = await to(
+		prisma.twitterUserSnapshot.findFirst({
+			where: {
+				userId,
+			},
+			orderBy: {
+				createdAt: 'desc',
+			},
+		}),
+	);
+	if (!lastSnapshot.ok || !lastSnapshot.data) {
+		// let's create the snapshot
+		return true;
+	}
+
+	const { data } = lastSnapshot;
+
+	return (
+		snapshot.username !== data.username ||
+		snapshot.name !== data.name ||
+		snapshot.followerCount !== data.followerCount ||
+		snapshot.followingCount !== data.followingCount ||
+		snapshot.tweetCount !== data.tweetCount ||
+		snapshot.pinnedTweetId !== data.pinnedTweetId ||
+		snapshot.bio !== data.bio ||
+		snapshot.location !== data.location ||
+		snapshot.website !== data.website ||
+		snapshot.verified !== data.verified
+	);
+}
+
 export async function makeSnapshot(userId: string) {
 	const snapshot = await to(userLookup(userId));
 
 	if (snapshot.ok) {
 		const { data } = snapshot;
+
+		const isUnique = await isSnapshotUnique(userId, data);
+
+		if (!isUnique) {
+			return;
+		}
+
 		await prisma.twitterUserSnapshot.create({
 			data: {
 				userId,
