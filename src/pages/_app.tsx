@@ -1,5 +1,6 @@
 import 'windi.css';
 import Head from 'next/head';
+import superjson from 'superjson';
 import type { AppProps as NextAppProps } from 'next/app';
 import { Favicon } from '../components/Favicon';
 import { SessionProvider } from 'next-auth/react';
@@ -39,6 +40,6 @@ export default withTRPC<ServerRouter>({
 			? `https://${process.env.VERCEL_URL}/api/trpc`
 			: 'http://localhost:3000/api/trpc';
 
-		return { url };
+		return { url, transformer: superjson };
 	},
 })(App);
