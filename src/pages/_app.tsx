@@ -36,11 +36,10 @@ function App(props: AppProps) {
 
 export default withTRPC<ServerRouter>({
 	config() {
-		const url = process.env.PUBLIC_VERCEL_URL
-			? `https://${process.env.PUBLIC_VERCEL_URL}/api/trpc`
+		const url = process.env.NEXT_PUBLIC_VERCEL_URL
+			? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/trpc`
 			: 'http://localhost:3000/api/trpc';
 
-		console.log(process.env.PUBLIC_VERCEL_URL);
 		return { url, transformer: superjson };
 	},
 })(App);
