@@ -1,4 +1,4 @@
-export function TermsAndConditions() {
+export default function TermsAndConditions() {
 	return (
 		<>
 			<h1>Terms &amp; Conditions</h1>
