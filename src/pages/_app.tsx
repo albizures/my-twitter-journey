@@ -8,6 +8,7 @@ import type { Session } from 'next-auth';
 import { withTRPC } from '@trpc/next';
 import { APP_FAVICON, APP_TITLE } from '../config';
 import type { ServerRouter } from '../server/router';
+import { url } from 'inspector';
 
 interface AppProps {
 	Component: NextAppProps['Component'];
@@ -34,11 +35,21 @@ function App(props: AppProps) {
 	);
 }
 
+function getUrl() {
+	if (typeof location === 'object') {
+		return `${location.origin}/api/trpc`;
+	}
+
+	if (process.env.NEXT_PUBLIC_VERCEL_URL) {
+		return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/trpc`;
+	}
+
+	return 'http://locahost:3000/api/trpc';
+}
+
 export default withTRPC<ServerRouter>({
 	config() {
-		const url = process.env.NEXT_PUBLIC_VERCEL_URL
-			? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/trpc`
-			: 'http://localhost:3000/api/trpc';
+		const url = getUrl();
 
 		return { url, transformer: superjson };
 	},
