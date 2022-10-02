@@ -4,6 +4,14 @@ import { z } from 'zod';
 import { createRouter, getUserFromCtx, hasRole } from './utils';
 
 export const twitterUser = createRouter()
+	.query('count', {
+		resolve(args) {
+			const { ctx } = args;
+			const { prisma } = ctx;
+
+			return prisma.twitterUser.count();
+		},
+	})
 	.query('find', {
 		resolve(args) {
 			// 📝: support pagination, search and trim properties
