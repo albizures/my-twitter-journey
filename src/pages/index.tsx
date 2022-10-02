@@ -14,6 +14,10 @@ export default function Home() {
 	const userCountQuery = trpc.useQuery(['twitterUser.count']);
 	const tweetCountQuery = trpc.useQuery(['tweet.count']);
 
+	function onLogin() {
+		signIn('twitter');
+	}
+
 	return (
 		<>
 			<Header />
@@ -39,7 +43,10 @@ export default function Home() {
 						</p>
 					) : (
 						<p className="text-2xl">
-							<button className="shadow-lg rounded bg-blue-400 py-0.5 px-3 text-white mr-1 uppercase">
+							<button
+								onClick={onLogin}
+								className="shadow-lg rounded bg-blue-400 py-0.5 px-3 text-white mr-1 uppercase"
+							>
 								Sign up
 							</button>{' '}
 							and start recording your journey

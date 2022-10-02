@@ -10,7 +10,7 @@ export function Favicon(props: FaviconProps) {
 		icon,
 		'</text>',
 		'</svg>',
-	];
+	].join();
 	return (
 		<>
 			<meta charSet="UTF-8" />

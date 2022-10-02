@@ -91,7 +91,7 @@ function Snapshots(props: SnapshotsProps) {
 				className="bg-black bg-opacity-40 inset-0 absolute"
 				onClick={onClose}
 			/>
-			<div className="bg-white shadow relative">
+			<div className="bg-white shadow relative max-w-lg">
 				<button onClick={onClose}>close</button>
 				<table>
 					<thead>
