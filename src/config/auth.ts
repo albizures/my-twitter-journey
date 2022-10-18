@@ -12,7 +12,6 @@ export const authOptions: NextAuthOptions = {
 		TwitterProvider({
 			clientId: TWITTER_API_KEY,
 			clientSecret: TWITTER_API_SECRET,
-			version: '2.0',
 		}),
 	],
 	callbacks: {

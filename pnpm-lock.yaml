@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@albizures/prettier-config': ^1.0.1
+  '@headlessui/react': ^1.7.3
   '@next-auth/prisma-adapter': ^1.0.4
   '@prisma/client': ^4.4.0
   '@trpc/client': ^9.27.2
@@ -22,6 +23,7 @@ specifiers:
   react-dom: ^18.2.0
   react-icons: ^4.4.0
   react-query: ^3.39.2
+  react-take: ^0.2.4
   superjson: ^1.10.0
   ts-node: ^10.9.1
   twitter-api-sdk: ^1.1.0
@@ -32,6 +34,7 @@ specifiers:
   zod: ^3.19.1
 
 dependencies:
+  '@headlessui/react': 1.7.3_biqbaboplfbrettd7655fr4n2y
   '@next-auth/prisma-adapter': 1.0.4_4bqc7sjuy2gevu243pkbxbqbye
   '@prisma/client': 4.4.0_prisma@4.4.0
   '@trpc/client': 9.27.2_@trpc+server@9.27.2
@@ -46,6 +49,7 @@ dependencies:
   react-dom: 18.2.0_react@18.2.0
   react-icons: 4.4.0_react@18.2.0
   react-query: 3.39.2_biqbaboplfbrettd7655fr4n2y
+  react-take: 0.2.4_react@18.2.0
   superjson: 1.10.0
   twitter-api-sdk: 1.1.0
   zod: 3.19.1
@@ -111,6 +115,17 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@headlessui/react/1.7.3_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-LGp06SrGv7BMaIQlTs8s2G06moqkI0cb0b8stgq7KZ3xcHdH3qMP+cRyV7qe5x4XEW/IGY48BW4fLesD6NQLng==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: ^16 || ^17 || ^18
+      react-dom: ^16 || ^17 || ^18
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
 
   /@humanwhocodes/config-array/0.10.6:
     resolution: {integrity: sha512-U/piU+VwXZsIgwnl+N+nRK12jCpHdc3s0UAc6zc1+HUgiESJxClpvYao/x9JwaN7onNeVb7kTlxlAvuEoaJ3ig==}
@@ -1671,6 +1686,10 @@ packages:
     resolution: {integrity: sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==}
     dev: true
 
+  /mitt/3.0.0:
+    resolution: {integrity: sha512-7dX2/10ITVyqh4aOSVI9gdape+t9l2/8QxHrFmUXu4EEUpdlxl6RudZUPZoc+zuY2hk1j7XxVroIVIan/pD/SQ==}
+    dev: false
+
   /ms/2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
     dev: true
@@ -2044,6 +2063,15 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
+      react: 18.2.0
+    dev: false
+
+  /react-take/0.2.4_react@18.2.0:
+    resolution: {integrity: sha512-0GftQ9wQnFknMfv3SioM5rcpRFzka0gcy937jW1P6hdPuPbvrQQm+DKl94rj60/mIHeDkCvTtntUIprr84raLQ==}
+    peerDependencies:
+      react: ^17.0.2 || ^18
+    dependencies:
+      mitt: 3.0.0
       react: 18.2.0
     dev: false
 

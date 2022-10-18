@@ -42,7 +42,7 @@ export default async function handler(
 		// 	lastSavedTweetId,
 		// 	errors: errors.length,
 		// 	retries,
-		// 	ids,
+		// 	ids: ids.length,
 		// });
 
 		const tweetsResult: Result<TweetList> = await to(

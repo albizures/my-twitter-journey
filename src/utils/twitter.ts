@@ -1,4 +1,6 @@
+import Ky from 'ky';
 import { z } from 'zod';
+import { to } from 'maybe-await-to';
 import { Client } from 'twitter-api-sdk';
 import { Tweet, TwitterUserSnapshot } from '@prisma/client';
 import { TWITTER_BEARER_TOKEN } from '../config';
@@ -8,6 +10,13 @@ import type {
 } from 'twitter-api-sdk/dist/types';
 
 const twitterClient = new Client(TWITTER_BEARER_TOKEN);
+
+const twitterApi = Ky.create({
+	prefixUrl: 'https://api.twitter.com/2',
+	headers: {
+		Authorization: TWITTER_BEARER_TOKEN,
+	},
+});
 
 export const userSchema = z
 	.object({
@@ -69,7 +78,7 @@ export async function userLookup(id: string) {
 	const result = userSchema.safeParse(user);
 
 	if (!result.success) {
-		console.error(result.error);
+		console.error('error parse', result.error);
 
 		throw new Error('Unexpected data from twitter');
 	}
@@ -77,7 +86,7 @@ export async function userLookup(id: string) {
 	return result.data;
 }
 
-const tweetParams: TwitterParams<findTweetById> = {
+const tweetParams = {
 	'tweet.fields': [
 		'attachments',
 		'author_id',
@@ -95,7 +104,7 @@ const tweetParams: TwitterParams<findTweetById> = {
 		'text',
 		'withheld',
 	],
-};
+} as const; // satisfies TwitterParams<findTweetById>;
 
 const tweetSchema = z
 	.object({
@@ -215,25 +224,41 @@ export async function getRecentTweetByUser(
 	const yesterday = new Date();
 	yesterday.setDate(yesterday.getDate() - 1);
 
-	const tweets = await twitterClient.tweets.tweetsRecentSearch({
-		query: `from:${userId}`,
-		sort_order: 'recency',
-		since_id: last,
-		// if there is not last tweet means it's the first time
-		// and only tweets from yesterday are going to be registerd
-		start_time: !last ? yesterday.toISOString() : undefined,
-		next_token: nextToken,
-		...tweetParams,
-	});
+	const params = new URLSearchParams();
 
-	if (tweets.errors && tweets.errors.length !== 0) {
-		throw tweets.errors;
+	// if there is not last tweet means it's the first time
+	// and only tweets from yesterday are going to be register
+	if (last) {
+		params.append('since_id', last);
+	} else {
+		params.append('start_time', yesterday.toISOString());
 	}
 
-	const result = tweetListSchema.safeParse(tweets);
+	params.append(
+		'tweet.fields',
+		tweetParams['tweet.fields'].join(','),
+	);
+	if (nextToken) {
+		params.append('pagination_token', nextToken);
+	}
+
+	const request = await to(
+		twitterApi
+			.get(`users/${userId}/tweets`, {
+				searchParams: params,
+			})
+			.json(),
+	);
+
+	if (!request.ok) {
+		console.error('error request', request.error);
+		throw new Error('Unexpected data from twitter');
+	}
+
+	const result = tweetListSchema.safeParse(request.data);
 
 	if (!result.success) {
-		console.error(result.error);
+		console.error('error parse', result.error);
 
 		throw new Error('Unexpected data from twitter');
 	}
@@ -244,7 +269,7 @@ export async function getRecentTweetByUser(
 export async function tweetLookup(id: string) {
 	const lookupTweetById = await twitterClient.tweets.findTweetById(
 		id,
-		tweetParams,
+		tweetParams as unknown as TwitterParams<findTweetById>,
 	);
 
 	if (lookupTweetById.errors && lookupTweetById.errors.length !== 0) {
@@ -254,7 +279,7 @@ export async function tweetLookup(id: string) {
 	const result = tweetLookupSchema.safeParse(lookupTweetById);
 
 	if (!result.success) {
-		console.error('error with data', lookupTweetById);
+		console.error('error parse', lookupTweetById);
 
 		throw result.error;
 	}
