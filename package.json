@@ -9,6 +9,9 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
+		"@await-to/chainable": "^1.0.0",
+		"@await-to/ky": "^1.0.0",
+		"@await-to/zod": "^1.0.0",
 		"@headlessui/react": "^1.7.3",
 		"@next-auth/prisma-adapter": "^1.0.5",
 		"@prisma/client": "^4.4.0",

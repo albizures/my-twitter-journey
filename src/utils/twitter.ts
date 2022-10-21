@@ -1,6 +1,6 @@
 import Ky from 'ky';
+import { FailResult, to } from '@await-to/chainable';
 import { z } from 'zod';
-import { to } from 'maybe-await-to';
 import { Client } from 'twitter-api-sdk';
 import { Tweet, TwitterUserSnapshot } from '@prisma/client';
 import { TWITTER_BEARER_TOKEN } from '../config';
@@ -8,13 +8,15 @@ import type {
 	findTweetById,
 	TwitterParams,
 } from 'twitter-api-sdk/dist/types';
+import { awaitToKy } from '@await-to/ky';
+import { awaitToZod } from '@await-to/zod';
 
 const twitterClient = new Client(TWITTER_BEARER_TOKEN);
 
 const twitterApi = Ky.create({
 	prefixUrl: 'https://api.twitter.com/2',
 	headers: {
-		Authorization: TWITTER_BEARER_TOKEN,
+		Authorization: `Bearer ${TWITTER_BEARER_TOKEN}`,
 	},
 });
 
@@ -242,25 +244,19 @@ export async function getRecentTweetByUser(
 		params.append('pagination_token', nextToken);
 	}
 
-	const request = await to(
+	const result = await to(
 		twitterApi
 			.get(`users/${userId}/tweets`, {
 				searchParams: params,
 			})
 			.json(),
-	);
+	)
+		.and(awaitToKy())
+		.and(awaitToZod(tweetListSchema))
+		.get();
 
-	if (!request.ok) {
-		console.error('error request', request.error);
-		throw new Error('Unexpected data from twitter');
-	}
-
-	const result = tweetListSchema.safeParse(request.data);
-
-	if (!result.success) {
-		console.error('error parse', result.error);
-
-		throw new Error('Unexpected data from twitter');
+	if (!result.ok) {
+		throw result.error;
 	}
 
 	return result.data;
